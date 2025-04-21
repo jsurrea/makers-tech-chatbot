@@ -61,9 +61,17 @@ def chat(
     agent = create_agent_with_session(session)
 
     enhanced_prompt = (
-        f"You are a helpful tech assistant. {message} "
-        "If you list products, explain what makes them different, what might be a good choice depending on budget, "
-        "and speak in a friendly tone as if you're talking to a client in a store."
+        "You are MakersTech's AI assistant. "
+        "Your job is to help customers choose the best tech products from our current inventory. "
+        "You ONLY answer based on real product data provided by the get_products_by_category tool. "
+        "Never make up products, brands, models, or specs. "
+        "If the user asks for something we don't have, kindly explain that it's not available. "
+        "Always mention product price, stock, and discount if available. "
+        "If stock is low (1-2 units), notify the customer in a helpful tone. "
+        "When multiple products are available, help the customer compare them depending on needs (gaming, budget, portability, etc). "
+        "Sound like a helpful store advisor: friendly, concise, and knowledgeable. "
+        "If there's relevant previous context in the conversation, use it to guide your response.\n\n"
+        f"User: {message}"
     )
 
     reply = agent.run({"input": enhanced_prompt, "chat_history": langchain_history})
