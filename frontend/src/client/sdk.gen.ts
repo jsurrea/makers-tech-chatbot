@@ -4,6 +4,11 @@ import type { CancelablePromise } from "./core/CancelablePromise"
 import { OpenAPI } from "./core/OpenAPI"
 import { request as __request } from "./core/request"
 import type {
+  ChatChatData,
+  ChatChatResponse,
+  InventoryInventorySummaryResponse,
+  InventoryLowStockItemsData,
+  InventoryLowStockItemsResponse,
   ItemsReadItemsData,
   ItemsReadItemsResponse,
   ItemsCreateItemData,
@@ -23,6 +28,9 @@ import type {
   LoginResetPasswordResponse,
   LoginRecoverPasswordHtmlContentData,
   LoginRecoverPasswordHtmlContentResponse,
+  PrivateCreateUserData,
+  PrivateCreateUserResponse,
+  RecommendationsGetRecommendationsResponse,
   UsersReadUsersData,
   UsersReadUsersResponse,
   UsersCreateUserData,
@@ -45,6 +53,67 @@ import type {
   UtilsTestEmailResponse,
   UtilsHealthCheckResponse,
 } from "./types.gen"
+
+export class ChatService {
+  /**
+   * Chat
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns ChatResponse Successful Response
+   * @throws ApiError
+   */
+  public static chat(data: ChatChatData): CancelablePromise<ChatChatResponse> {
+    return __request(OpenAPI, {
+      method: "POST",
+      url: "/api/v1/chat/",
+      body: data.requestBody,
+      mediaType: "application/json",
+      errors: {
+        422: "Validation Error",
+      },
+    })
+  }
+}
+
+export class InventoryService {
+  /**
+   * Inventory Summary
+   * Returns inventory summary grouped by category and brand.
+   * Only accessible to superusers.
+   * @returns unknown Successful Response
+   * @throws ApiError
+   */
+  public static inventorySummary(): CancelablePromise<InventoryInventorySummaryResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/api/v1/inventory/summary/",
+    })
+  }
+
+  /**
+   * Low Stock Items
+   * Returns a list of items with stock below the threshold.
+   * Only accessible to superusers.
+   * @param data The data for the request.
+   * @param data.threshold
+   * @returns unknown Successful Response
+   * @throws ApiError
+   */
+  public static lowStockItems(
+    data: InventoryLowStockItemsData = {},
+  ): CancelablePromise<InventoryLowStockItemsResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/api/v1/inventory/low-stock/",
+      query: {
+        threshold: data.threshold,
+      },
+      errors: {
+        422: "Validation Error",
+      },
+    })
+  }
+}
 
 export class ItemsService {
   /**
@@ -268,6 +337,45 @@ export class LoginService {
       errors: {
         422: "Validation Error",
       },
+    })
+  }
+}
+
+export class PrivateService {
+  /**
+   * Create User
+   * Create a new user.
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns UserPublic Successful Response
+   * @throws ApiError
+   */
+  public static createUser(
+    data: PrivateCreateUserData,
+  ): CancelablePromise<PrivateCreateUserResponse> {
+    return __request(OpenAPI, {
+      method: "POST",
+      url: "/api/v1/private/users/",
+      body: data.requestBody,
+      mediaType: "application/json",
+      errors: {
+        422: "Validation Error",
+      },
+    })
+  }
+}
+
+export class RecommendationsService {
+  /**
+   * Get Recommendations
+   * Recommend products using a simple probabilistic model based on category interest.
+   * @returns Item Successful Response
+   * @throws ApiError
+   */
+  public static getRecommendations(): CancelablePromise<RecommendationsGetRecommendationsResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/api/v1/recommendations/",
     })
   }
 }

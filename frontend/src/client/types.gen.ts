@@ -9,18 +9,57 @@ export type Body_login_login_access_token = {
   client_secret?: string | null
 }
 
+export type ChatRequest = {
+  message: string
+}
+
+export type ChatResponse = {
+  reply: string
+}
+
 export type HTTPValidationError = {
   detail?: Array<ValidationError>
+}
+
+export type Item = {
+  title: string
+  description?: string | null
+  brand: string
+  model?: string | null
+  color?: string | null
+  price: number
+  discount?: number | null
+  category: string
+  image?: string | null
+  stock: number
+  id?: string
+  owner_id: string
 }
 
 export type ItemCreate = {
   title: string
   description?: string | null
+  brand: string
+  model?: string | null
+  color?: string | null
+  price: number
+  discount?: number | null
+  category: string
+  image?: string | null
+  stock: number
 }
 
 export type ItemPublic = {
   title: string
   description?: string | null
+  brand: string
+  model?: string | null
+  color?: string | null
+  price: number
+  discount?: number | null
+  category: string
+  image?: string | null
+  stock: number
   id: string
   owner_id: string
 }
@@ -33,6 +72,14 @@ export type ItemsPublic = {
 export type ItemUpdate = {
   title?: string | null
   description?: string | null
+  brand?: string | null
+  model?: string | null
+  color?: string | null
+  price?: number | null
+  discount?: number | null
+  category?: string | null
+  image?: string | null
+  stock?: number | null
 }
 
 export type Message = {
@@ -42,6 +89,13 @@ export type Message = {
 export type NewPassword = {
   token: string
   new_password: string
+}
+
+export type PrivateUserCreate = {
+  email: string
+  password: string
+  full_name: string
+  is_verified?: boolean
 }
 
 export type Token = {
@@ -59,6 +113,12 @@ export type UserCreate = {
   is_active?: boolean
   is_superuser?: boolean
   full_name?: string | null
+  tv_count?: number
+  audio_count?: number
+  laptop_count?: number
+  mobile_count?: number
+  gaming_count?: number
+  appliances_count?: number
   password: string
 }
 
@@ -67,6 +127,12 @@ export type UserPublic = {
   is_active?: boolean
   is_superuser?: boolean
   full_name?: string | null
+  tv_count?: number
+  audio_count?: number
+  laptop_count?: number
+  mobile_count?: number
+  gaming_count?: number
+  appliances_count?: number
   id: string
 }
 
@@ -86,6 +152,12 @@ export type UserUpdate = {
   is_active?: boolean
   is_superuser?: boolean
   full_name?: string | null
+  tv_count?: number
+  audio_count?: number
+  laptop_count?: number
+  mobile_count?: number
+  gaming_count?: number
+  appliances_count?: number
   password?: string | null
 }
 
@@ -99,6 +171,32 @@ export type ValidationError = {
   msg: string
   type: string
 }
+
+export type ChatChatData = {
+  requestBody: ChatRequest
+}
+
+export type ChatChatResponse = ChatResponse
+
+export type InventoryInventorySummaryResponse =
+  | {
+      [key: string]: {
+        [key: string]: number
+      }
+    }
+  | {
+      [key: string]: string
+    }
+
+export type InventoryLowStockItemsData = {
+  threshold?: number
+}
+
+export type InventoryLowStockItemsResponse =
+  | Array<Item>
+  | {
+      [key: string]: string
+    }
 
 export type ItemsReadItemsData = {
   limit?: number
@@ -157,6 +255,16 @@ export type LoginRecoverPasswordHtmlContentData = {
 }
 
 export type LoginRecoverPasswordHtmlContentResponse = string
+
+export type PrivateCreateUserData = {
+  requestBody: PrivateUserCreate
+}
+
+export type PrivateCreateUserResponse = UserPublic
+
+export type RecommendationsGetRecommendationsResponse = {
+  [key: string]: Array<Item>
+}
 
 export type UsersReadUsersData = {
   limit?: number
