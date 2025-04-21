@@ -8,6 +8,7 @@ import {
 import { useEffect, useState } from "react"
 import { ChatService, UsersService } from "@/client"
 import useCustomToast from "@/hooks/useCustomToast"
+import MarkdownMessage from "@/components/Common/MarkdownMessage"
 
 type Message = {
   role: "user" | "assistant"
@@ -71,7 +72,7 @@ const ChatBot = () => {
             borderRadius="md"
             alignSelf={msg.role === "user" ? "flex-end" : "flex-start"}
           >
-            <Text>{msg.content}</Text>
+            <MarkdownMessage content={msg.content} />
           </Box>
         ))}
       </VStack>
