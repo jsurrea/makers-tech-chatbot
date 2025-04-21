@@ -95,3 +95,10 @@ MIT. Built using:
 - [LangChain](https://github.com/langchain-ai/langchain)
 - [Chakra UI](https://chakra-ui.com)
 - [OpenAI](https://platform.openai.com)
+
+---
+
+## Gallery
+
+![Recommendations](./img/recommendations.png)
+![Inventory](./img/inventory.png)
