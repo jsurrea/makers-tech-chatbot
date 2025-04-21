@@ -60,6 +60,7 @@ class User(UserBase, table=True):
 # Properties to return via API, id is always required
 class UserPublic(UserBase):
     id: uuid.UUID
+    chat_history: list["ChatMessage"] | None = Field(default=None)
 
 
 class UsersPublic(SQLModel):

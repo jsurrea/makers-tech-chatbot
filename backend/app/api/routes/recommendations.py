@@ -1,5 +1,3 @@
-import random
-
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, or_, select
 
@@ -15,11 +13,11 @@ def get_recommendations(
     user: User = Depends(get_current_user),
 ) -> dict[str, list[Item]]:
     """
-    Recommend products using a simple probabilistic model based on category interest.
+    Recommend products using top-2 most interacted categories by user.
     """
 
-    # User interaction counts per category
-    raw_counts = {
+    # Step 1: Get category interaction counts
+    counts = {
         "tv": user.tv_count,
         "audio": user.audio_count,
         "laptop": user.laptop_count,
@@ -28,41 +26,21 @@ def get_recommendations(
         "appliances": user.appliances_count,
     }
 
-    total = sum(raw_counts.values())
-
-    if total == 0:
-        # Default fallback when there's no history
-        raw_counts = {k: 1 for k in raw_counts}
-        total = sum(raw_counts.values())
-
-    # Probabilities per category
-    category_probs = {k: v / total for k, v in raw_counts.items()}
-
-    # Sample categories according to probability
-    all_categories = list(category_probs.keys())
-    weights = [category_probs[c] for c in all_categories]
-
-    sampled_categories = random.choices(all_categories, weights=weights, k=3)
-    sampled_categories = list(set(sampled_categories))  # remove duplicates
+    # Step 2: Sort categories by interaction count
+    sorted_categories = sorted(counts.items(), key=lambda x: x[1], reverse=True)
+    top_1 = sorted_categories[0][0] if sorted_categories else None
+    top_2 = sorted_categories[1][0] if len(sorted_categories) > 1 else None
+    rest = [cat for cat, _ in sorted_categories[2:]]
 
     def get_items(categories: list[str]) -> list[Item]:
         if not categories:
             return []
-
-        # Build condition: (Item.category == cat1) OR (Item.category == cat2) ...
         conditions = [Item.category == cat for cat in categories]
         stmt = select(Item).where(or_(*conditions))
-        return list(db.exec(stmt).all())
+        return list(db.exec(stmt).all())[:3]
 
-    # We can still return 3 tiers, but probabilistically assigned
     return {
-        "highly_recommended": get_items([sampled_categories[0]])
-        if len(sampled_categories) > 0
-        else [],
-        "recommended": get_items([sampled_categories[1]])
-        if len(sampled_categories) > 1
-        else [],
-        "not_recommended": get_items(
-            [c for c in all_categories if c not in sampled_categories]
-        ),
+        "highly_recommended": get_items([top_1]) if top_1 else [],
+        "recommended": get_items([top_2]) if top_2 else [],
+        "not_recommended": get_items(rest),
     }

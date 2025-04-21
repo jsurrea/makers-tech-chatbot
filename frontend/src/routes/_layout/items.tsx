@@ -97,13 +97,13 @@ function ItemsTable() {
               <Table.Cell truncate maxW="sm">
                 {item.id}
               </Table.Cell>
-              <Table.Cell truncate maxW="sm">
+              <Table.Cell truncate maxW="100px">
                 {item.title}
               </Table.Cell>
               <Table.Cell
                 color={!item.description ? "gray" : "inherit"}
                 truncate
-                maxW="30%"
+                maxW="250px"
               >
                 {item.description || "N/A"}
               </Table.Cell>

@@ -9,6 +9,14 @@ export type Body_login_login_access_token = {
   client_secret?: string | null
 }
 
+export type ChatMessage = {
+  id?: string
+  user_id: string
+  timestamp?: string
+  role: string
+  content: string
+}
+
 export type ChatRequest = {
   message: string
 }
@@ -134,6 +142,7 @@ export type UserPublic = {
   gaming_count?: number
   appliances_count?: number
   id: string
+  chat_history?: Array<ChatMessage> | null
 }
 
 export type UserRegister = {
