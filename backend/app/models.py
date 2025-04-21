@@ -1,3 +1,4 @@
+import datetime
 import uuid
 
 from pydantic import EmailStr
@@ -10,6 +11,13 @@ class UserBase(SQLModel):
     is_active: bool = True
     is_superuser: bool = False
     full_name: str | None = Field(default=None, max_length=255)
+    # Measure interests of the user for recommendations
+    tv_count: int = Field(default=0)
+    audio_count: int = Field(default=0)
+    laptop_count: int = Field(default=0)
+    mobile_count: int = Field(default=0)
+    gaming_count: int = Field(default=0)
+    appliances_count: int = Field(default=0)
 
 
 # Properties to receive via API on creation
@@ -44,6 +52,9 @@ class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
+    chat_history: list["ChatMessage"] = Relationship(
+        back_populates="user", sa_relationship_kwargs={"cascade": "all, delete"}
+    )
 
 
 # Properties to return via API, id is always required
@@ -58,8 +69,16 @@ class UsersPublic(SQLModel):
 
 # Shared properties
 class ItemBase(SQLModel):
-    title: str = Field(min_length=1, max_length=255)
-    description: str | None = Field(default=None, max_length=255)
+    title: str = Field(min_length=1, max_length=10_000)
+    description: str | None = Field(default=None, max_length=10_000)
+    brand: str = Field(min_length=1, max_length=10_000)
+    model: str | None = Field(default=None, max_length=10_000)
+    color: str | None = Field(default=None, max_length=10_000)
+    price: float = Field(gt=0)
+    discount: float | None = Field(default=None, ge=0, le=100)
+    category: str = Field(min_length=1, max_length=10_000)
+    image: str | None = Field(default=None, max_length=10_000)
+    stock: int = Field(ge=0)
 
 
 # Properties to receive on item creation
@@ -68,8 +87,17 @@ class ItemCreate(ItemBase):
 
 
 # Properties to receive on item update
-class ItemUpdate(ItemBase):
-    title: str | None = Field(default=None, min_length=1, max_length=255)  # type: ignore
+class ItemUpdate(SQLModel):
+    title: str | None = Field(default=None, min_length=1)
+    description: str | None = Field(default=None)
+    brand: str | None = Field(default=None, min_length=1)
+    model: str | None = Field(default=None, min_length=1)
+    color: str | None = Field(default=None, min_length=1)
+    price: float | None = Field(default=None, gt=0)
+    discount: float | None = Field(default=None, ge=0, le=100)
+    category: str | None = Field(default=None, min_length=1)
+    image: str | None = Field(default=None)
+    stock: int | None = Field(default=None, ge=0)
 
 
 # Database model, database table inferred from class name
@@ -90,6 +118,18 @@ class ItemPublic(ItemBase):
 class ItemsPublic(SQLModel):
     data: list[ItemPublic]
     count: int
+
+
+class ChatMessage(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    user_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
+    timestamp: datetime.datetime = Field(
+        default_factory=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
+    role: str  # "user" or "assistant"
+    content: str
+
+    user: User | None = Relationship(back_populates="chat_history")
 
 
 # Generic message
